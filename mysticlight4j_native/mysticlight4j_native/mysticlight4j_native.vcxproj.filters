@@ -38,9 +38,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="de_matthiasfisch_mysticlight4j_MysticLightAPI.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="ml.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>

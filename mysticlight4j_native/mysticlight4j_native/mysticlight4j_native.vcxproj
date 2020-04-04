@@ -161,7 +161,6 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="de_matthiasfisch_mysticlight4j_MysticLightAPI.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="ml.cpp" />
     <ClCompile Include="pch.cpp">

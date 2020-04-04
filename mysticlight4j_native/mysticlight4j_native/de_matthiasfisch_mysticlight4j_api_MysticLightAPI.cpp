@@ -1,7 +1,5 @@
 #include "pch.h"
 #include <string.h>
-#include <iostream>
-using namespace std;
 
 jclass loadClass(const char* clazzName, JNIEnv* env) {
     jclass clazz = env->FindClass(clazzName);
@@ -26,7 +24,6 @@ jobjectArray createStringArrayFromSafeArray(CComSafeArray<BSTR>* safearray, JNIE
 }
 
 bool checkStatus(int status, JNIEnv* env) {
-    cout << "Status: " << status << endl;
     if (status == MLAPI_OK) {
         return true;
     }
@@ -188,7 +185,7 @@ JNIEXPORT jobject JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI
     if (!checkStatus(status, env)) return NULL;
 
     jclass colorClass = loadClass("Lde/matthiasfisch/mysticlight4j/api/Color;", env);
-    jmethodID ctorId = env->GetMethodID(colorClass, "<init>", "(BBB)V");
+    jmethodID ctorId = env->GetMethodID(colorClass, "<init>", "(SSS)V");
     if (ctorId == NULL) return NULL;
     return env->NewObject(colorClass, ctorId, red, green, blue);
 }
@@ -243,9 +240,9 @@ JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_se
 {
     BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
     jclass colorClazz = loadClass("Lde/matthiasfisch/mysticlight4j/api/Color;", env);
-    jbyte red = env->CallByteMethod(jcolor, env->GetMethodID(colorClazz, "getRed", "()B"));
-    jbyte green = env->CallByteMethod(jcolor, env->GetMethodID(colorClazz, "getGreen", "()B"));
-    jbyte blue = env->CallByteMethod(jcolor, env->GetMethodID(colorClazz, "getBlue", "()B"));
+    jshort red = env->CallShortMethod(jcolor, env->GetMethodID(colorClazz, "getRed", "()S"));
+    jshort green = env->CallShortMethod(jcolor, env->GetMethodID(colorClazz, "getGreen", "()S"));
+    jshort blue = env->CallShortMethod(jcolor, env->GetMethodID(colorClazz, "getBlue", "()S"));
 
     int status = mysticLight.setLedColor(device, jledIndex, red, green, blue);
     if (!checkStatus(status, env)) return;
@@ -277,7 +274,7 @@ JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_se
 
 JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_setLedBright(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex, jint jbright)
 {
-     BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
+    BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
 
      int status = mysticLight.setLedBright(device, jledIndex, jbright);
      if (!checkStatus(status, env)) return;
