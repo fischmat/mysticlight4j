@@ -8,8 +8,8 @@ import java.util.Locale;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MysticLightAPI {
-    private static final String NATIVE_DLL_NAME_X86 = "mysticlight4j_native.dll";
-    private static final String NATIVE_DLL_NAME_X64 = "mysticlight4j_native_x64.dll";
+    protected static final String NATIVE_DLL_NAME_X86 = "mysticlight4j_native.dll";
+    protected static final String NATIVE_DLL_NAME_X64 = "mysticlight4j_native_x64.dll";
 
     // Load the native wrapper DLL on class initialization
     static {

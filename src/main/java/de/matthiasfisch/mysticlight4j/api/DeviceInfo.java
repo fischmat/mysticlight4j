@@ -20,7 +20,7 @@ public final class DeviceInfo {
      * @param deviceType The identifier for the device.
      * @param ledCount The number of LEDs of the device.
      */
-    public DeviceInfo(@NonNull final String deviceType, @NonNull final int ledCount) {
+    public DeviceInfo(@NonNull final String deviceType, final int ledCount) {
         this.deviceType = deviceType;
         this.ledCount = ledCount;
     }
