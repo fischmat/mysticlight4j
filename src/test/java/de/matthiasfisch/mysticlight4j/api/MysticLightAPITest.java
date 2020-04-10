@@ -2,6 +2,7 @@ package de.matthiasfisch.mysticlight4j.api;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
+import de.matthiasfisch.mysticlight4j.WindowsOnlyTest;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,13 +13,10 @@ import java.util.Vector;
 
 import static org.junit.Assert.assertTrue;
 
-public class MysticLightAPITest {
+public class MysticLightAPITest extends WindowsOnlyTest {
     @Test
     public void testInitialization_windowsOperatingSystem_nativeDllLoaded() throws Exception {
         // Arrange
-        final String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
-        Assume.assumeTrue(operatingSystem.contains("windows"));
-
         final Field clLibrariesField = ClassLoader.class.getDeclaredField("loadedLibraryNames");
         clLibrariesField.setAccessible(true);
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();

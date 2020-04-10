@@ -22,4 +22,15 @@ public final class Color {
         this.green = green;
         this.blue = blue;
     }
+
+    /**
+     * Creates a color object with the given color values.
+     * @param red The red channel value. Must be in range [0, 255].
+     * @param green The green channel value. Must be in range [0, 255].
+     * @param blue The blue channel value. Must be in range [0, 255].
+     * @return Returns the color object with the specified color values.
+     */
+    public static Color of(final int red, final int green, final int blue) {
+        return new Color((short) red, (short) green, (short) blue);
+    }
 }

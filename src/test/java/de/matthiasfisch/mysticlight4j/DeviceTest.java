@@ -31,7 +31,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(fullyQualifiedNames = "de.matthiasfisch.mysticlight4j.api.MysticLightAPI")
-public class DeviceTest {
+public class DeviceTest extends WindowsOnlyTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -96,6 +96,24 @@ public class DeviceTest {
 
         verifyStatic(MysticLightAPI.class);
         MysticLightAPI.getLedInfo(eq(deviceType), eq(0));
+    }
+
+    @Test
+    public void testGetName_noParameters_nativeFunctionCalled() {
+        // Arrange
+        final String deviceType = "deviceType";
+        final String deviceName = "deviceName";
+        final Device subject = new Device(new DeviceInfo(deviceType, 1));
+        when(MysticLightAPI.getLedInfo(deviceType, 0)).thenReturn(new LedInfo(deviceType, 0, "LED1", new String[] {"style1"}));
+        when(MysticLightAPI.getDeviceNameEx(deviceType, 0)).thenReturn(deviceName);
+
+        // Act
+        final String result = subject.getName();
+
+        // Assert
+        assertThat(result, equalTo(deviceName));
+        verifyStatic(MysticLightAPI.class);
+        MysticLightAPI.getDeviceNameEx(eq(deviceName), eq(0));
     }
 
     @Test
