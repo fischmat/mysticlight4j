@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 @Getter(AccessLevel.PROTECTED)
 @EqualsAndHashCode
 @ToString
-public class Device {
+public final class Device {
     private final DeviceInfo deviceInfo;
     @EqualsAndHashCode.Exclude
     private final ImmutableList<LED> leds;
@@ -44,6 +44,11 @@ public class Device {
 
     public List<LED> getLEDs() {
         return leds;
+    }
+
+    public LED getLED(final int index) {
+        Validate.inclusiveBetween(0, leds.size() - 1, index, "LED index must be in range [0, %s]", leds.size());
+        return leds.get(index);
     }
 
     public Optional<LED> getLED(@NonNull final String ledName) {

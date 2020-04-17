@@ -19,13 +19,13 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class LED {
+public final class LED {
     private final Device device;
     private final int index;
     @EqualsAndHashCode.Exclude
     private final LedInfo ledInfo;
 
-    protected LED(@NonNull final Device device, @NonNull final int index) {
+    protected LED(@NonNull final Device device, final int index) {
         Validate.isTrue(index >= 0, "The LED index must not be negative.");
         Validate.isTrue(index < device.getNumberOfLEDs(), "The LED index must be less than the number of LEDs of the device.");
         this.device = device;

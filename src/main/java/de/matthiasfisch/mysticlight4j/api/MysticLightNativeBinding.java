@@ -1,8 +1,32 @@
 package de.matthiasfisch.mysticlight4j.api;
 
-import org.apache.commons.lang3.NotImplementedException;
+import com.google.common.annotations.VisibleForTesting;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-public class MysticLightAPI {
+import java.io.File;
+import java.util.Locale;
+
+@NoArgsConstructor(access = AccessLevel.PACKAGE, onConstructor_ = @VisibleForTesting)
+class MysticLightNativeBinding {
+    protected static final String NATIVE_DLL_NAME_X86 = "mysticlight4j_native.dll";
+    protected static final String NATIVE_DLL_NAME_X64 = "mysticlight4j_native_x64.dll";
+
+    // Load the native wrapper DLL on class initialization
+    static {
+        final String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
+        if(!operatingSystem.startsWith("windows")) {
+            throw new IllegalStateException("Mystic Light is only supported on Microsoft Windows operating systems");
+        }
+        final String userDirPath = System.getProperty("user.dir");
+        final boolean isX86 = System.getProperty("os.arch").toLowerCase(Locale.getDefault()).equals("x86");
+        final String dllVersion = isX86 ? NATIVE_DLL_NAME_X86 : NATIVE_DLL_NAME_X64;
+        final File nativeWrapperDll = new File(userDirPath + File.separator + dllVersion);
+        if (!nativeWrapperDll.canRead()) {
+            throw new IllegalStateException(String.format("Could not find native DLL %s in path %s", NATIVE_DLL_NAME_X86, userDirPath));
+        }
+        System.load(nativeWrapperDll.getAbsolutePath());
+    }
 
     /**
      * Interaction with the Mystic Light API requires the process to run with administrator privileges.
@@ -10,18 +34,14 @@ public class MysticLightAPI {
      * of the Mystic Light API.
      * @return Returns true if the JVM is running with elevated privileges.
      */
-    public static boolean isProcessElevated() {
-        return MysticLightNativeBinding.isProcessElevated();
-    }
+    public static native boolean isProcessElevated();
 
     /**
      * Initializes the Mystic Light API. This method must be called before any other method of the Mystic Light API
      * is called.
      * @throws MysticLightAPIException Thrown if the native function does not return {@code MLAPI_OK}.
      */
-    public static void initialize() throws MysticLightAPIException {
-        MysticLightNativeBinding.initialize();
-    }
+    public static native void initialize() throws MysticLightAPIException;
 
     /**
      * Returns information about all installed devices that are compatible with Mystic Light. The information contains a
@@ -29,17 +49,11 @@ public class MysticLightAPI {
      * @return Returns information about all Mystic Light devices installed.
      * @throws MysticLightAPIException Thrown if the native function does not return {@code MLAPI_OK}.
      */
-    public static DeviceInfo[] getDeviceInfo() throws MysticLightAPIException {
-        return MysticLightNativeBinding.getDeviceInfo();
-    }
+    public static native DeviceInfo[] getDeviceInfo() throws MysticLightAPIException;
 
-    public static String[] getDeviceName(String device) throws MysticLightAPIException {
-        return MysticLightNativeBinding.getDeviceName(device);
-    }
+    public static native String[] getDeviceName(String device) throws MysticLightAPIException;
 
-    public static String getDeviceNameEx(String device, int deviceId) throws MysticLightAPIException {
-        return MysticLightNativeBinding.getDeviceNameEx(device, deviceId);
-    }
+    public static native String getDeviceNameEx(String device, int deviceId) throws MysticLightAPIException;
 
     /**
      * Returns information about a specific LED of a Mystic Light device. This information contains the name of the LED
@@ -49,9 +63,7 @@ public class MysticLightAPI {
      * @return Returns information about the specifed LED.
      * @throws MysticLightAPIException Thrown if the native function does not return {@code MLAPI_OK}.
      */
-    public static LedInfo getLedInfo(String device, int index) throws MysticLightAPIException {
-        return MysticLightNativeBinding.getLedInfo(device, index);
-    }
+    public static native LedInfo getLedInfo(String device, int index) throws MysticLightAPIException;
 
     /**
      * This function retrieves the all LED name within LED area of specific device.
@@ -60,9 +72,7 @@ public class MysticLightAPI {
      * @return Returns the names of the LED.
      * @throws MysticLightAPIException Thrown if the native function does not return {@code MLAPI_OK}.
      */
-    public static String[] getLedName(String device) throws MysticLightAPIException {
-        return MysticLightNativeBinding.getLedName(device);
-    }
+    public static native String[] getLedName(String device) throws MysticLightAPIException;
 
     /**
      * Returns the current color of a LED of a specific Mystic Light device.
@@ -71,9 +81,7 @@ public class MysticLightAPI {
      * @return Returns the color of the specified LED.
      * @throws MysticLightAPIException Thrown if the native function does not return {@code MLAPI_OK}.
      */
-    public static Color getLedColor(String device, int ledIndex) throws MysticLightAPIException {
-        return MysticLightNativeBinding.getLedColor(device, ledIndex);
-    }
+    public static native Color getLedColor(String device, int ledIndex) throws MysticLightAPIException;
 
     /**
      * Returns the currently active style of a LED of a specific Mystic Light device.
@@ -82,9 +90,7 @@ public class MysticLightAPI {
      * @return Returns the active style of the specified LED.
      * @throws MysticLightAPIException Thrown if the native function does not return {@code MLAPI_OK}.
      */
-    public static String getLedStyle(String device, int ledIndex) throws MysticLightAPIException {
-        return MysticLightNativeBinding.getLedStyle(device, ledIndex);
-    }
+    public static native String getLedStyle(String device, int ledIndex) throws MysticLightAPIException;
 
     /**
      * Returns the maximum brightness value of a LED of a specific Mystic Light device.
@@ -93,9 +99,7 @@ public class MysticLightAPI {
      * @return Returns the maximum brightness value of the specified LED.
      * @throws MysticLightAPIException Thrown if the native function does not return {@code MLAPI_OK}.
      */
-    public static int getLedMaxBright(String device, int ledIndex) throws MysticLightAPIException {
-        return MysticLightNativeBinding.getLedMaxBright(device, ledIndex);
-    }
+    public static native int getLedMaxBright(String device, int ledIndex) throws MysticLightAPIException;
 
     /**
      * Returns the current brightness level of a LED of a specific Mystic Light device.
@@ -104,9 +108,7 @@ public class MysticLightAPI {
      * @return Returns the current brightness level of the specified LED.
      * @throws MysticLightAPIException Thrown if the native function does not return {@code MLAPI_OK}.
      */
-    public static int getLedBright(String device, int ledIndex) throws MysticLightAPIException {
-        return MysticLightNativeBinding.getLedBright(device, ledIndex);
-    }
+    public static native int getLedBright(String device, int ledIndex) throws MysticLightAPIException;
 
     /**
      * Returns the maximum speed level of a LED of a specific Mystic Light device.
@@ -115,9 +117,7 @@ public class MysticLightAPI {
      * @return Returns the maximum speed level of the specified LED.
      * @throws MysticLightAPIException Thrown if the native function does not return {@code MLAPI_OK}.
      */
-    public static int getLedMaxSpeed(String device, int ledIndex) throws MysticLightAPIException {
-        return MysticLightNativeBinding.getLedMaxSpeed(device, ledIndex);
-    }
+    public static native int getLedMaxSpeed(String device, int ledIndex) throws MysticLightAPIException;
 
     /**
      * Returns the current speed level of a LED of a specific Mystic Light device.
@@ -126,9 +126,7 @@ public class MysticLightAPI {
      * @return Returns the current speed level of the specified LED.
      * @throws MysticLightAPIException Thrown if the native function does not return {@code MLAPI_OK}.
      */
-    public static int getLedSpeed(String device, int ledIndex) throws MysticLightAPIException {
-        return MysticLightNativeBinding.getLedSpeed(device, ledIndex);
-    }
+    public static native int getLedSpeed(String device, int ledIndex) throws MysticLightAPIException;
 
     /**
      * Sets the color of a LED of a specific Mystic Light device.
@@ -137,21 +135,13 @@ public class MysticLightAPI {
      * @param color The color to set.
      * @throws MysticLightAPIException Thrown if the native function does not return {@code MLAPI_OK}.
      */
-    public static void setLedColor(String device, int ledIndex, Color color) throws MysticLightAPIException {
-        MysticLightNativeBinding.setLedColor(device, ledIndex, color);
-    }
+    public static native void setLedColor(String device, int ledIndex, Color color) throws MysticLightAPIException;
 
-    public static void setLedColors(String device, int ledIndex, String[] ledNames, Color color) throws MysticLightAPIException {
-        throw new NotImplementedException("This function is currently not implemented");
-    }
+    public static native void setLedColors(String device, int ledIndex, String[] ledNames, Color color) throws MysticLightAPIException;
 
-    public static void setLedColorEx(String device, int ledIndex, String ledName, Color color, boolean sync) throws MysticLightAPIException {
-        throw new NotImplementedException("This function is currently not implemented");
-    }
+    public static native void setLedColorEx(String device, int ledIndex, String ledName, Color color, boolean sync) throws MysticLightAPIException;
 
-    public static void setLedColorSync(String device, int ledIndex, String ledName, Color color, boolean sync) throws MysticLightAPIException {
-        throw new NotImplementedException("This function is currently not implemented");
-    }
+    public static native void setLedColorSync(String device, int ledIndex, String ledName, Color color, boolean sync) throws MysticLightAPIException;
 
     /**
      * Sets the active style of a LED of a specific Mystic Light device.
@@ -160,9 +150,7 @@ public class MysticLightAPI {
      * @param style The style to set. Must be one of the styles returned by {@link #getLedInfo(String, int)} for this LED.
      * @throws MysticLightAPIException Thrown if the native function does not return {@code MLAPI_OK}.
      */
-    public static void setLedStyle(String device, int ledIndex, String style) throws MysticLightAPIException {
-        MysticLightNativeBinding.setLedStyle(device, ledIndex, style);
-    }
+    public static native void setLedStyle(String device, int ledIndex, String style) throws MysticLightAPIException;
 
     /**
      * Sets the brightness value of a LED of a specific Mystic Light device.
@@ -171,9 +159,7 @@ public class MysticLightAPI {
      * @param level The brightness level to set. Must be a value between 0 and {@link #getLedMaxBright(String, int)}.
      * @throws MysticLightAPIException Thrown if the native function does not return {@code MLAPI_OK}.
      */
-    public static void setLedBright(String device, int ledIndex, int level) throws MysticLightAPIException {
-        MysticLightNativeBinding.setLedBright(device, ledIndex, level);
-    }
+    public static native void setLedBright(String device, int ledIndex, int level) throws MysticLightAPIException;
 
     /**
      * Sets the speed level of a LED of a specific Mystic Light device.
@@ -182,7 +168,5 @@ public class MysticLightAPI {
      * @param level The speed level to set. Must be a value between 0 and {@link #getLedMaxSpeed(String, int)}.
      * @throws MysticLightAPIException Thrown if the native function does not return {@code MLAPI_OK}.
      */
-    public static void setLedSpeed(String device, int ledIndex, int level) throws MysticLightAPIException {
-        MysticLightNativeBinding.setLedSpeed(device, ledIndex, level);
-    }
+    public static native void setLedSpeed(String device, int ledIndex, int level) throws MysticLightAPIException;
 }

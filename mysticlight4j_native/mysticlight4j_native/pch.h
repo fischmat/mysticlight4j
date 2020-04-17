@@ -13,6 +13,6 @@
 #include <atlsafe.h>
 #include "MysticLight_SDK.h"
 #include "ml.h"
-#include "de_matthiasfisch_mysticlight4j_api_MysticLightAPI.h"
+#include "de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding.h"
 
 #endif //PCH_H

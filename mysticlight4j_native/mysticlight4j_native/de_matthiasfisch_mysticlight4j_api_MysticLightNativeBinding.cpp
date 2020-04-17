@@ -41,7 +41,7 @@ bool checkStatus(int status, JNIEnv* env) {
     return false;
 }
 
-JNIEXPORT jboolean JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_isProcessElevated(JNIEnv* env, jclass jthis)
+JNIEXPORT jboolean JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_isProcessElevated(JNIEnv* env, jclass jthis)
 {
     BOOL isElevated = FALSE;
     HANDLE hToken = NULL;
@@ -75,13 +75,13 @@ JNIEXPORT jboolean JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAP
     return isElevated;
 }
 
-JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_initialize(JNIEnv* env, jclass jthis)
+JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_initialize(JNIEnv* env, jclass jthis)
 {
     int status = mysticLight.initialize();
     if (!checkStatus(status, env)) return;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_getDeviceInfo(JNIEnv* env, jclass jthis)
+JNIEXPORT jobjectArray JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_getDeviceInfo(JNIEnv* env, jclass jthis)
 {
     LPSAFEARRAY pDeviceTypes, pLedCounts;
     int status = mysticLight.getDeviceInfo(&pDeviceTypes, &pLedCounts);
@@ -113,7 +113,7 @@ JNIEXPORT jobjectArray JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLig
     return deviceInfos;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_getDeviceName(JNIEnv* env, jclass jthis, jstring jdeviceStr)
+JNIEXPORT jobjectArray JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_getDeviceName(JNIEnv* env, jclass jthis, jstring jdeviceStr)
 {
     LPSAFEARRAY pDeviceNames;
     BSTR device = (BSTR) env->GetStringChars(jdeviceStr, NULL);
@@ -136,7 +136,7 @@ JNIEXPORT jobjectArray JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLig
     return jDeviceNames;
 }
 
-JNIEXPORT jstring JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_getDeviceNameEx(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
+JNIEXPORT jstring JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_getDeviceNameEx(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
 {
     BSTR device = (BSTR) env->GetStringChars(jdevice, NULL);
     BSTR deviceName;
@@ -145,7 +145,7 @@ JNIEXPORT jstring JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI
     return env->NewString((jchar*) deviceName, wcslen(deviceName));
 }
 
-JNIEXPORT jobject JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_getLedInfo(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
+JNIEXPORT jobject JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_getLedInfo(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
 {
     LPSAFEARRAY pLedStyles;
     BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
@@ -165,7 +165,7 @@ JNIEXPORT jobject JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI
     return env->NewObject(ledInfoClazz, ctorId, jdevice, jledIndex, jname, jstyles);
 }
 
-JNIEXPORT jobjectArray JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_getLedName(JNIEnv* env, jclass jthis, jstring jdevice)
+JNIEXPORT jobjectArray JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_getLedName(JNIEnv* env, jclass jthis, jstring jdevice)
 {
     LPSAFEARRAY pLedNames;
     BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
@@ -177,7 +177,7 @@ JNIEXPORT jobjectArray JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLig
     return createStringArrayFromSafeArray(&ledNames, env);
 }
 
-JNIEXPORT jobject JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_getLedColor(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
+JNIEXPORT jobject JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_getLedColor(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
 {
     BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
     DWORD red, green, blue;
@@ -190,7 +190,7 @@ JNIEXPORT jobject JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI
     return env->NewObject(colorClass, ctorId, red, green, blue);
 }
 
-JNIEXPORT jstring JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_getLedStyle(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
+JNIEXPORT jstring JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_getLedStyle(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
 {
     BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
     BSTR style;
@@ -200,7 +200,7 @@ JNIEXPORT jstring JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI
     return env->NewString((jchar*)style, wcslen(style));
 }
 
-JNIEXPORT jint JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_getLedMaxBright(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
+JNIEXPORT jint JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_getLedMaxBright(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
 {
     BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
     DWORD value;
@@ -209,7 +209,7 @@ JNIEXPORT jint JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_ge
     return value;
 }
 
-JNIEXPORT jint JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_getLedBright(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
+JNIEXPORT jint JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_getLedBright(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
 {
     BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
     DWORD value;
@@ -218,7 +218,7 @@ JNIEXPORT jint JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_ge
     return value;
 }
 
-JNIEXPORT jint JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_getLedMaxSpeed(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
+JNIEXPORT jint JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_getLedMaxSpeed(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
 {
     BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
     DWORD value;
@@ -227,7 +227,7 @@ JNIEXPORT jint JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_ge
     return value;
 }
 
-JNIEXPORT jint JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_getLedSpeed(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
+JNIEXPORT jint JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_getLedSpeed(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex)
 {
     BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
     DWORD value;
@@ -236,7 +236,7 @@ JNIEXPORT jint JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_ge
     return value;
 }
 
-JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_setLedColor(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex, jobject jcolor)
+JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_setLedColor(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex, jobject jcolor)
 {
     BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
     jclass colorClazz = loadClass("Lde/matthiasfisch/mysticlight4j/api/Color;", env);
@@ -248,22 +248,22 @@ JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_se
     if (!checkStatus(status, env)) return;
 }
 
-JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_setLedColors(JNIEnv*, jclass, jstring, jint, jobjectArray, jobject)
+JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_setLedColors(JNIEnv*, jclass, jstring, jint, jobjectArray, jobject)
 {
     return; // FIXME
 }
 
-JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_setLedColorEx(JNIEnv*, jclass, jstring, jint, jstring, jobject, jboolean)
+JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_setLedColorEx(JNIEnv*, jclass, jstring, jint, jstring, jobject, jboolean)
 {
     return; // FIXME
 }
 
-JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_setLedColorSync(JNIEnv*, jclass, jstring, jint, jstring, jobject, jboolean)
+JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_setLedColorSync(JNIEnv*, jclass, jstring, jint, jstring, jobject, jboolean)
 {
     return; // FIXME
 }
 
-JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_setLedStyle(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex, jstring jstyle)
+JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_setLedStyle(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex, jstring jstyle)
 {
     BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
     BSTR style = (BSTR)env->GetStringChars(jstyle, NULL);
@@ -272,7 +272,7 @@ JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_se
     if (!checkStatus(status, env)) return;
 }
 
-JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_setLedBright(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex, jint jbright)
+JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_setLedBright(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex, jint jbright)
 {
     BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
 
@@ -280,7 +280,7 @@ JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_se
      if (!checkStatus(status, env)) return;
 }
 
-JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightAPI_setLedSpeed(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex, jint jspeed)
+JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_setLedSpeed(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex, jint jspeed)
 {
     BSTR device = (BSTR)env->GetStringChars(jdevice, NULL);
 
