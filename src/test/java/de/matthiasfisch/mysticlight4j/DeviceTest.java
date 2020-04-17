@@ -1,6 +1,5 @@
 package de.matthiasfisch.mysticlight4j;
 
-import com.google.common.collect.Lists;
 import de.matthiasfisch.mysticlight4j.api.DeviceInfo;
 import de.matthiasfisch.mysticlight4j.api.LedInfo;
 import de.matthiasfisch.mysticlight4j.api.MysticLightAPI;
@@ -10,31 +9,33 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
-import org.mockito.internal.util.collections.Iterables;
-import org.mockito.verification.VerificationMode;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.List;
+import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.powermock.api.mockito.PowerMockito.verifyStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(fullyQualifiedNames = "de.matthiasfisch.mysticlight4j.api.MysticLightAPI")
-public class DeviceTest extends WindowsOnlyTest {
+public class DeviceTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
+    @Before
+    public void setUp() {
+        mockStatic(MysticLightAPI.class);
+    }
 
     @Test
     public void testCTOR_nullDeviceInfo_nullPointerException() {
@@ -78,8 +79,8 @@ public class DeviceTest extends WindowsOnlyTest {
         final DeviceInfo deviceInfo = new DeviceInfo(deviceType, ledCount);
 
         when(MysticLightAPI.getLedInfo(deviceType, 0)).thenReturn(new LedInfo(deviceType, 0, "LED1", new String[] {"style1"}));
-        when(MysticLightAPI.getLedInfo(deviceType, 1)).thenReturn(new LedInfo(deviceType, 1, "LED1", new String[] {"style1"}));
-        when(MysticLightAPI.getLedInfo(deviceType, 2)).thenReturn(new LedInfo(deviceType, 2, "LED1", new String[] {"style1"}));
+        when(MysticLightAPI.getLedInfo(deviceType, 1)).thenReturn(new LedInfo(deviceType, 1, "LED2", new String[] {"style1"}));
+        when(MysticLightAPI.getLedInfo(deviceType, 2)).thenReturn(new LedInfo(deviceType, 2, "LED3", new String[] {"style1"}));
 
         // Act
         final Device subject = new Device(deviceInfo);
@@ -113,13 +114,101 @@ public class DeviceTest extends WindowsOnlyTest {
         // Assert
         assertThat(result, equalTo(deviceName));
         verifyStatic(MysticLightAPI.class);
-        MysticLightAPI.getDeviceNameEx(eq(deviceName), eq(0));
+        MysticLightAPI.getDeviceNameEx(eq(deviceType), eq(0));
+    }
+
+    @Test
+    public void testGetLED_negativeIndex_illegalArgumentException() {
+        // Arrange
+        final int ledCount = 3;
+        final Device subject = new Device(new DeviceInfo("deviceType", ledCount));
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage(String.format("LED index must be in range [0, %s]", ledCount));
+
+        // Act + Assert - via rule
+        subject.getLED(-1);
+    }
+
+    @Test
+    public void testGetLED_indexGreaterThanMax_illegalArgumentException() {
+        // Arrange
+        final int ledCount = 3;
+        final Device subject = new Device(new DeviceInfo("deviceType", ledCount));
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage(String.format("LED index must be in range [0, %s]", ledCount));
+
+        // Act + Assert - via rule
+        subject.getLED(ledCount);
+    }
+
+    @Test
+    public void testGetLED_indexExists_correctResult() {
+        // Arrange
+        final int ledCount = 3;
+        final String deviceType = "deviceType";
+        final Device subject = new Device(new DeviceInfo("deviceType", ledCount));
+
+        when(MysticLightAPI.getLedInfo(deviceType, 0)).thenReturn(new LedInfo(deviceType, 0, "LED1", new String[] {"style1"}));
+        when(MysticLightAPI.getLedInfo(deviceType, 1)).thenReturn(new LedInfo(deviceType, 1, "LED2", new String[] {"style1"}));
+        when(MysticLightAPI.getLedInfo(deviceType, 2)).thenReturn(new LedInfo(deviceType, 2, "LED3", new String[] {"style1"}));
+
+        // Act
+        final LED led = subject.getLED(1);
+
+        // Assert
+        assertThat(led, is(not(nullValue())));
+        assertThat(led.getIndex(), is(1));
+
+        verifyStatic(MysticLightAPI.class);
+        MysticLightAPI.getLedInfo(eq(deviceType), eq(0));
+        MysticLightAPI.getLedInfo(eq(deviceType), eq(1));
+        MysticLightAPI.getLedInfo(eq(deviceType), eq(2));
+    }
+
+    @Test
+    public void testGetLED_noSuchLed_resultEmpty() {
+        // Arrange
+        final String deviceType = "deviceType";
+        when(MysticLightAPI.getLedInfo(deviceType, 0)).thenReturn(new LedInfo(deviceType, 0, "LED1", new String[] {"style1"}));
+        final Device subject = new Device(new DeviceInfo(deviceType, 1));
+
+        // Act
+        final Optional<LED> result = subject.getLED("unknownName");
+
+        // Assert
+        assertThat(result.isPresent(), is(false));
+        verifyStatic(MysticLightAPI.class);
+        MysticLightAPI.getLedInfo(eq(deviceType), eq(0));
+    }
+
+    @Test
+    public void testGetLED_existingLED_resultEmpty() {
+        // Arrange
+        final String deviceType = "deviceType";
+        final String ledName = "LED1";
+        when(MysticLightAPI.getLedInfo(deviceType, 0)).thenReturn(new LedInfo(deviceType, 0, ledName, new String[] {"style1"}));
+        final Device subject = new Device(new DeviceInfo(deviceType, 1));
+
+        // Act
+        final Optional<LED> result = subject.getLED(ledName);
+
+        // Assert
+        assertThat(result.isPresent(), is(true));
+        assertThat(result.map(LED::getName), equalTo(Optional.of(ledName)));
+        verifyStatic(MysticLightAPI.class);
+        MysticLightAPI.getLedInfo(eq(deviceType), eq(0));
     }
 
     @Test
     public void testEqualsAndHashCode_withVerifier_verificationOk() {
-        // Arrange + Act + Assert - via verifier
-        EqualsVerifier.forClass(Device.class).withIgnoredFields("leds").verify();
+        // Arrange
+        final LED redLed = new LED(new Device(new DeviceInfo("dev1", 1)), 0);
+        final LED blackLed = new LED(new Device(new DeviceInfo("dev2", 2)), 1);
+        // Act + Assert - via verifier
+        EqualsVerifier.forClass(Device.class)
+                .withPrefabValues(LED.class, redLed, blackLed)
+                .withIgnoredFields("leds")
+                .verify();
     }
 
     private Matcher<LED> ledMatcher(@NonNull final Device device, final int index) {

@@ -125,6 +125,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;MYSTICLIGHT4JNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk-11.0.6\include;C:\Program Files\Java\jdk-11.0.6\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,6 +145,7 @@
       <PreprocessorDefinitions>NDEBUG;MYSTICLIGHT4JNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk-11.0.6\include;C:\Program Files\Java\jdk-11.0.6\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,7 +156,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="de_matthiasfisch_mysticlight4j_api_MysticLightAPI.h" />
+    <ClInclude Include="de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="ml.h" />
     <ClInclude Include="MysticLight_SDK.h" />
@@ -169,7 +171,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="de_matthiasfisch_mysticlight4j_api_MysticLightAPI.cpp" />
+    <ClCompile Include="de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

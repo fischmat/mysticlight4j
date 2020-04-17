@@ -19,7 +19,7 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 @ToString
-public class LED {
+public final class LED {
     private final Device device;
     private final int index;
     @EqualsAndHashCode.Exclude

@@ -27,7 +27,7 @@
     <ClInclude Include="MysticLight_SDK.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="de_matthiasfisch_mysticlight4j_api_MysticLightAPI.h">
+    <ClInclude Include="de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -41,7 +41,7 @@
     <ClCompile Include="ml.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="de_matthiasfisch_mysticlight4j_api_MysticLightAPI.cpp">
+    <ClCompile Include="de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

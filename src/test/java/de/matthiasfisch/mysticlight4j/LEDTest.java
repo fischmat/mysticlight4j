@@ -10,6 +10,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -17,15 +19,14 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.powermock.api.mockito.PowerMockito.verifyStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.times;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(fullyQualifiedNames = "de.matthiasfisch.mysticlight4j.api.MysticLightAPI")
-public class LEDTest extends WindowsOnlyTest {
+public class LEDTest {
     private static final String DEVICE_ID = "DEVICE_ID";
-    private static final int DEVICE_LED_COUNT = 2;
-    private static final Device DEVICE = new Device(new DeviceInfo(DEVICE_ID, DEVICE_LED_COUNT));
+    private static final int DEVICE_LED_COUNT = 1;
     private static final String LED_NAME = "LED_NAME";
     private static final String LED_STYLE1 = "Rainbow";
     private static final String LED_STYLE2 = "Flash";
@@ -35,12 +36,14 @@ public class LEDTest extends WindowsOnlyTest {
     public ExpectedException thrown = ExpectedException.none();
 
     private LED subject;
+    private Device device;
 
     @Before
     public void setUp() {
-        super.setUp();
+        mockStatic(MysticLightAPI.class);
         when(MysticLightAPI.getLedInfo(eq(DEVICE_ID), eq(0))).thenReturn(new LedInfo(DEVICE_ID, 0, LED_NAME, LED_STYLES));
-        subject = new LED(DEVICE, 0);
+        device = new Device(new DeviceInfo(DEVICE_ID, DEVICE_LED_COUNT));
+        subject = device.getLED(0);
     }
 
     @Test
@@ -60,7 +63,7 @@ public class LEDTest extends WindowsOnlyTest {
         thrown.expectMessage("The LED index must not be negative.");
 
         // Act + Assert - via rule
-        new LED(DEVICE, -1);
+        new LED(device, -1);
     }
 
     @Test
@@ -70,7 +73,7 @@ public class LEDTest extends WindowsOnlyTest {
         thrown.expectMessage("The LED index must be less than the number of LEDs of the device.");
 
         // Act + Assert - via rule
-        new LED(DEVICE, DEVICE_LED_COUNT);
+        new LED(device, DEVICE_LED_COUNT);
     }
 
     @Test
@@ -80,7 +83,7 @@ public class LEDTest extends WindowsOnlyTest {
         thrown.expectMessage("The LED index must be less than the number of LEDs of the device.");
 
         // Act + Assert - via rule
-        new LED(DEVICE, DEVICE_LED_COUNT + 1);
+        new LED(device, DEVICE_LED_COUNT + 1);
     }
 
     @Test
@@ -92,14 +95,14 @@ public class LEDTest extends WindowsOnlyTest {
         when(MysticLightAPI.getLedInfo(eq(DEVICE_ID), eq(0))).thenReturn(ledInfo);
 
         // Act
-        final LED subject = new LED(DEVICE, 0);
+        final LED subject = new LED(device, 0);
 
         // Assert
-        assertThat(subject.getDevice(), equalTo(DEVICE));
+        assertThat(subject.getDevice(), equalTo(device));
         assertThat(subject.getName(), equalTo(name));
         assertThat(subject.getAvailableStyles(), hasItems(styles));
 
-        verifyStatic(MysticLightAPI.class);
+        verifyStatic(MysticLightAPI.class, times(2)); // Once called in setUp
         MysticLightAPI.getLedInfo(eq(DEVICE_ID), eq(0));
     }
 
@@ -357,6 +360,11 @@ public class LEDTest extends WindowsOnlyTest {
     @Test
     public void testEqualsAndHashCode_withVerifier_verificationOk() {
         // Arrange + Act + Assert - via verifier
-        EqualsVerifier.forClass(LED.class).withIgnoredFields("ledInfo").verify();
+        final Device redDevice = new Device(new DeviceInfo("dev1", 1));
+        final Device blackDevice = new Device(new DeviceInfo("dev2", 1));
+        EqualsVerifier.forClass(LED.class)
+                .withPrefabValues(Device.class, redDevice, blackDevice)
+                .withIgnoredFields("ledInfo")
+                .verify();
     }
 }
