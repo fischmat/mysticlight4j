@@ -12,7 +12,7 @@ import org.apache.commons.lang3.Validate;
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class LedInfo {
+public final class LedInfo {
     private final String deviceType;
     private final int index;
     private final String name;
