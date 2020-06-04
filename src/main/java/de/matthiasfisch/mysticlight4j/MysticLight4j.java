@@ -56,41 +56,4 @@ public class MysticLight4j {
                 .map(Device::new)
                 .collect(Collectors.toList());
     }
-
-    /**
-     * Identifies a LED by turning all other LEDs in the system off and making the specified LED blink.
-     * This method is intended for testing during developement.
-     * @param led The LED to identify.
-     */
-    public void identifyLED(@NonNull final LED led) {
-        // Turn off all other LEDs remembering their initial styles
-        final Map<LED, String> originalStylesByLED = getAllAvailableDevices().stream()
-                .flatMap(dev -> dev.getLEDs().stream())
-                .filter(l -> !l.equals(led))
-                .collect(Collectors.toMap(Function.identity(), LED::getStyle));
-        originalStylesByLED.keySet()
-                .forEach(l -> l.setStyle("Off"));
-
-        final boolean onOffStylesAvailable = led.getAvailableStyles().contains("Off") && led.getAvailableStyles().contains("Steady");
-        try {
-            // Toggle the styles with 500ms delays for 5s
-            for (int i = 0; i < 10; i++) {
-                if (onOffStylesAvailable) {
-                    led.setStyle("Steady");
-                } else {
-                    led.setBrightnessLevel(led.getMaximumBrightnessLevel());
-                }
-                Thread.sleep(500);
-                if (onOffStylesAvailable) {
-                    led.setStyle("Off");
-                } else {
-                    led.setBrightnessLevel(1);
-                }
-                Thread.sleep(500);
-            }
-        } catch (final InterruptedException ignored) { }
-
-        // Restore original styles
-        originalStylesByLED.keySet().forEach(l -> l.setStyle(originalStylesByLED.get(l)));
-    }
 }

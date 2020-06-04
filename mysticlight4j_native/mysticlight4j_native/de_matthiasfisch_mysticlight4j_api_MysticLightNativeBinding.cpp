@@ -41,6 +41,14 @@ bool checkStatus(int status, JNIEnv* env) {
     return false;
 }
 
+void throwUnsupportedOperationException(const wchar_t *message, JNIEnv * env) {
+    jclass exClass = loadClass("Ljava/lang/UnsupportedOperationException;", env);
+    jstring errorMessageString = env->NewString((jchar*) message, wcslen(message));
+    jmethodID ctorId = env->GetMethodID(exClass, "<init>", "(Ljava/lang/String;)V");
+    jobject ex = env->NewObject(exClass, ctorId, errorMessageString);
+    env->Throw((jthrowable)ex);
+}
+
 JNIEXPORT jboolean JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_isProcessElevated(JNIEnv* env, jclass jthis)
 {
     BOOL isElevated = FALSE;
@@ -248,19 +256,19 @@ JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNative
     if (!checkStatus(status, env)) return;
 }
 
-JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_setLedColors(JNIEnv*, jclass, jstring, jint, jobjectArray, jobject)
+JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_setLedColors(JNIEnv* env, jclass jthis, jstring jdevice, jint jindex, jobjectArray jledName, jobject jcolor)
 {
-    return; // FIXME
+    throwUnsupportedOperationException(L"Native binding for MLAPI_SetLedColors is not supported yet.", env);
 }
 
-JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_setLedColorEx(JNIEnv*, jclass, jstring, jint, jstring, jobject, jboolean)
+JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_setLedColorEx(JNIEnv* env, jclass jthis, jstring jdevice, jint jindex, jstring jledName, jobject jcolor, jboolean jsync)
 {
-    return; // FIXME
+    throwUnsupportedOperationException(L"Native binding for MLAPI_SetLedColorEx is not supported yet.", env);
 }
 
-JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_setLedColorSync(JNIEnv*, jclass, jstring, jint, jstring, jobject, jboolean)
+JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_setLedColorSync(JNIEnv* env, jclass jthis, jstring jdevice, jint jindex, jstring jledName, jobject jcolor, jboolean jsync)
 {
-    return; // FIXME
+    throwUnsupportedOperationException(L"Native binding for MLAPI_SetLedColorSync is not supported yet.", env);
 }
 
 JNIEXPORT void JNICALL Java_de_matthiasfisch_mysticlight4j_api_MysticLightNativeBinding_setLedStyle(JNIEnv* env, jclass jthis, jstring jdevice, jint jledIndex, jstring jstyle)

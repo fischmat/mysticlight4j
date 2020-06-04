@@ -1,7 +1,7 @@
 
 # mysticlight4j
 
-mysticlight4j is a Java library for controlling [MSI Mystic Light](https://de.msi.com/Landing/mystic-light-rgb-gaming-pc/) compatible RGB lighting. It provides an object oriented interface as well as bindings the the [Mystic Light SDK](https://de.msi.com/Landing/mystic-light-rgb-gaming-pc/download) API functions via the Java Native Interface (JNI) for a more low-level access.
+mysticlight4j is a Java library for controlling [MSI Mystic Light](https://de.msi.com/Landing/mystic-light-rgb-gaming-pc/) compatible RGB lighting. It provides an object oriented interface as well as bindings to the [Mystic Light SDK](https://de.msi.com/Landing/mystic-light-rgb-gaming-pc/download) API functions via the Java Native Interface (JNI) for low-level access.
 
 The library consists of the following parts:
 - The Java code for both object-oriented and direct access to the Mystic Light devices
