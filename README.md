@@ -19,6 +19,7 @@ led.setColor(255, 0, 0);
 
 If you prefer direct access to the Mystic Light SDK functions you can access them via the JNI interface `MysticLightAPI`.
 ```java
+MysticLightAPI.initialize();
 MysticLightAPI.setLedStyle("MSI_MB", 2, "Straight");
 MysticLightAPI.setColor("MSI_MB", 2, new Color(255, 0, 0));
 ```
