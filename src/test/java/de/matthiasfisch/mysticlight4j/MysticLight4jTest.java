@@ -34,12 +34,6 @@ public class MysticLight4jTest {
     @Before
     public void setUp() throws Exception {
         mockStatic(MysticLightAPI.class);
-
-        // Reset the API initialization flag
-        final Class<?> clazz = MysticLight4j.class;
-        final Field apiInitializedField = clazz.getDeclaredField("apiInitialized");
-        apiInitializedField.setAccessible(true);
-        apiInitializedField.setBoolean(null, false);
         workingDirectory = Paths.get(System.getProperty("user.dir"));
     }
 
@@ -84,20 +78,6 @@ public class MysticLight4jTest {
         when(MysticLightAPI.isProcessElevated()).thenReturn(true);
 
         // Act
-        new MysticLight4j();
-
-        // Assert
-        verifyStatic(MysticLightAPI.class);
-        MysticLightAPI.initialize();
-    }
-
-    @Test
-    public void testCTOR_instantiateTwiceAndElevatedPrivileges_apiInitializedOnce() throws Exception {
-        // Arrange
-        when(MysticLightAPI.isProcessElevated()).thenReturn(true);
-
-        // Act
-        new MysticLight4j();
         new MysticLight4j();
 
         // Assert

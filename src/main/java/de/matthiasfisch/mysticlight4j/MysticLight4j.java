@@ -20,10 +20,6 @@ import java.util.stream.Collectors;
  * {@link MysticLightAPI} JNI interface.
  */
 public class MysticLight4j {
-    /**
-     * Static flag indicating whether the Mystic Light API was already initialized by this JVM process.
-     */
-    private static boolean apiInitialized = false;
 
     /**
      * Initializes a new MysticLight4j instance initializing the native API if necessary.
@@ -50,13 +46,11 @@ public class MysticLight4j {
      * @throws de.matthiasfisch.mysticlight4j.api.MysticLightAPIException Thrown if initialization of the native API fails.
      */
     public MysticLight4j(@NonNull final boolean requireElevatedPrivileges, @NonNull final Path dllPath) {
+        MysticLightAPI.loadNativeDll(dllPath);
         if (requireElevatedPrivileges && !MysticLightAPI.isProcessElevated()) {
             throw new IllegalStateException("The JVM must run with administrator privileges in order to control Mystic Light devices.");
         }
-        if (!apiInitialized) {
-            MysticLightAPI.initialize();
-            apiInitialized = true;
-        }
+        MysticLightAPI.initialize();
     }
 
     /**

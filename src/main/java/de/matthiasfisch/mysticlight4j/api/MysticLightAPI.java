@@ -27,7 +27,12 @@ public class MysticLightAPI {
     protected static final String NATIVE_DLL_NAME_X64 = "mysticlight4j_native_x64.dll";
 
     /**
-     * Static flag indicating whether the DLLs were already loaded and the SDK was initialized.
+     * Static flag indicating whether the native DLL was already loaded.
+     */
+    private static boolean isNativeDllLoaded = false;
+
+    /**
+     * Static flag indicating whether the SDK was initialized.
      */
     private static boolean isInitialized = false;
 
@@ -67,6 +72,26 @@ public class MysticLightAPI {
             return;
         }
 
+        // Load the native DLL if not yet done
+        loadNativeDll(path);
+
+        // Actually initialize the SDK
+        MysticLightNativeBinding.initialize();
+        isInitialized = true;
+    }
+
+    /**
+     * Loads the native DLL providing the bindings the the functions of the Mystic Light SDK.
+     * This method must be called before calling any other method of this class except for {@link #initialize()} and its
+     * overloading variants (as these implicitly call this method if not done already).
+     * @param path The path to the native DLL for the system architecture or to a directory containing this file.
+     */
+    public static void loadNativeDll(@NonNull final Path path) {
+        // If the native DLL was already loaded there is nothing to do
+        if (isNativeDllLoaded) {
+            return;
+        }
+
         // DLLs can only be loaded on Microsoft Windows:
         final String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
         if(!operatingSystem.startsWith("windows")) {
@@ -94,10 +119,6 @@ public class MysticLightAPI {
 
         // Load the native DLL
         System.load(dllPath.toAbsolutePath().toString());
-
-        // Actually initialize the SDK
-        MysticLightNativeBinding.initialize();
-        isInitialized = true;
     }
 
     /**
@@ -265,10 +286,11 @@ public class MysticLightAPI {
 
     /**
      * Helper method for unit tests to reset initialization of the class.
-     * @param isInitialized Whether the API should be marked as initialized.
+     * @param initializationStatus Whether the API should be marked as initialized.
      */
     @VisibleForTesting
-    static void setInitializationStatus(final boolean isInitialized) {
-        MysticLightAPI.isInitialized = isInitialized;
+    static void setInitializationStatus(final boolean initializationStatus) {
+        MysticLightAPI.isNativeDllLoaded = initializationStatus;
+        MysticLightAPI.isInitialized = initializationStatus;
     }
 }
