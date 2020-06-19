@@ -4,6 +4,8 @@ import de.matthiasfisch.mysticlight4j.api.Color;
 import de.matthiasfisch.mysticlight4j.api.MysticLightAPI;
 import lombok.NonNull;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
@@ -30,15 +32,24 @@ public class MysticLight4j {
      * @throws de.matthiasfisch.mysticlight4j.api.MysticLightAPIException Thrown if initialization of the native API fails.
      */
     public MysticLight4j() {
-        this(true);
+        this(true, Paths.get(System.getProperty("user.dir")));
+    }
+
+    /**
+     * Initializes a new MysticLight4j instance initializing the native API if necessary.
+     * @param dllPath The path to the native DLL for the system architecture or to a directory containing this file.
+     */
+    public MysticLight4j(@NonNull final Path dllPath) {
+        this(true, dllPath);
     }
 
     /**
      * Initializes a new MysticLight4j instance initializing the native API if necessary.
      * @param requireElevatedPrivileges Whether to enforce elevated privileges.
+     * @param dllPath The path to the native DLL for the system architecture or to a directory containing this file.
      * @throws de.matthiasfisch.mysticlight4j.api.MysticLightAPIException Thrown if initialization of the native API fails.
      */
-    public MysticLight4j(final boolean requireElevatedPrivileges) {
+    public MysticLight4j(@NonNull final boolean requireElevatedPrivileges, @NonNull final Path dllPath) {
         if (requireElevatedPrivileges && !MysticLightAPI.isProcessElevated()) {
             throw new IllegalStateException("The JVM must run with administrator privileges in order to control Mystic Light devices.");
         }
