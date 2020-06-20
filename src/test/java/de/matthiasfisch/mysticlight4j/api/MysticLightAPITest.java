@@ -1,12 +1,12 @@
 package de.matthiasfisch.mysticlight4j.api;
 
 import com.google.common.collect.Streams;
-import de.matthiasfisch.mysticlight4j.WindowsOnlyTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,13 +14,17 @@ import java.util.Locale;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.assumeTrue;
 
-public class MysticLightAPITest extends WindowsOnlyTest {
+public class MysticLightAPITest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setUp() {
+        // Only run on Windows as admin
+        assumeTrue(isRunningAsWindowsAdmin());
+
         // When multiple tests run the is initialize flag may be still set from other tests - set it false
         MysticLightAPI.setInitializationStatus(false);
     }
@@ -119,5 +123,22 @@ public class MysticLightAPITest extends WindowsOnlyTest {
     private String getDllNameForSystemArchitecture() {
         final String osArch = System.getProperty("os.arch").toLowerCase(Locale.getDefault());
         return osArch.contains("x86") ? MysticLightAPI.NATIVE_DLL_NAME_X86 : MysticLightAPI.NATIVE_DLL_NAME_X64;
+    }
+
+    private boolean isRunningAsWindowsAdmin() {
+        final String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
+        if (!operatingSystem.contains("windows")) {
+            return false;
+        }
+
+        final String dllForArch = getDllNameForSystemArchitecture();
+        final Path dllPath = Paths.get(System.getProperty("user.dir")).resolve(dllForArch);
+        final File dllFile = dllPath.toFile();
+        if (!dllFile.isFile() || !dllFile.canRead()) {
+            return false;
+        }
+
+        System.load(dllPath.toAbsolutePath().toString());
+        return MysticLightNativeBinding.isProcessElevated();
     }
 }
