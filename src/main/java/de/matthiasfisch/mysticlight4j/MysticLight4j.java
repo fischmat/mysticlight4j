@@ -46,7 +46,7 @@ public class MysticLight4j {
      * @param dllPath The path to the native DLL for the system architecture or to a directory containing this file.
      * @throws de.matthiasfisch.mysticlight4j.api.MysticLightAPIException Thrown if initialization of the native API fails.
      */
-    public MysticLight4j(@NonNull final boolean requireElevatedPrivileges, @NonNull final Path dllPath) {
+    public MysticLight4j(final boolean requireElevatedPrivileges, @NonNull final Path dllPath) {
         MysticLightAPI.loadNativeDll(dllPath);
         if (requireElevatedPrivileges && !MysticLightAPI.isProcessElevated()) {
             throw new IllegalStateException("The JVM must run with administrator privileges in order to control Mystic Light devices.");
