@@ -85,6 +85,8 @@ led.setStyle(style);
 // After a short period of time the LED style should change
 ```
 
+For further details on the object oriented API have a look at the [JavaDoc](https://fischmat.github.io/mysticlight4j/de/matthiasfisch/mysticlight4j/package-summary.html).
+
 ## How to use the Low-Level API
 Apart from the object-oriented API described above, mysticlight4j also provides direct access to the functions of the Mystic Light SDK. For this you can use the static methods in the class `MysticLightAPI`. Please make sure that you call `initialize()` before calling any other method.
 
@@ -102,6 +104,8 @@ for (DeviceInfo device : devices) {
   }  
 }
 ```
+
+For further details on the low-level API have a look at the [JavaDoc](https://fischmat.github.io/mysticlight4j/de/matthiasfisch/mysticlight4j/api/MysticLightAPI.html).
 
 ## Tested hardware
 As stated above I was not yet able to test the library on any other system than my personal one. If you encounter any issues or successfully use it on your system please tell me via the issue tracker and I will add it to this list of tested hardware.
