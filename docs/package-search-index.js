@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"de.matthiasfisch.mysticlight4j"},{"l":"de.matthiasfisch.mysticlight4j.api"}]
