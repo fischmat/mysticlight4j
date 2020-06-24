@@ -4,8 +4,11 @@ import de.matthiasfisch.mysticlight4j.api.Color;
 import de.matthiasfisch.mysticlight4j.api.MysticLightAPI;
 import lombok.NonNull;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -18,10 +21,6 @@ import java.util.stream.Collectors;
  * {@link MysticLightAPI} JNI interface.
  */
 public class MysticLight4j {
-    /**
-     * Static flag indicating whether the Mystic Light API was already initialized by this JVM process.
-     */
-    private static boolean apiInitialized = false;
 
     /**
      * Initializes a new MysticLight4j instance initializing the native API if necessary.
@@ -30,28 +29,35 @@ public class MysticLight4j {
      * @throws de.matthiasfisch.mysticlight4j.api.MysticLightAPIException Thrown if initialization of the native API fails.
      */
     public MysticLight4j() {
-        this(true);
+        this(true, Paths.get(System.getProperty("user.dir")));
+    }
+
+    /**
+     * Initializes a new MysticLight4j instance initializing the native API if necessary.
+     * @param dllPath The path to the native DLL for the system architecture or to a directory containing this file.
+     */
+    public MysticLight4j(@NonNull final Path dllPath) {
+        this(true, dllPath);
     }
 
     /**
      * Initializes a new MysticLight4j instance initializing the native API if necessary.
      * @param requireElevatedPrivileges Whether to enforce elevated privileges.
+     * @param dllPath The path to the native DLL for the system architecture or to a directory containing this file.
      * @throws de.matthiasfisch.mysticlight4j.api.MysticLightAPIException Thrown if initialization of the native API fails.
      */
-    public MysticLight4j(final boolean requireElevatedPrivileges) {
+    public MysticLight4j(final boolean requireElevatedPrivileges, @NonNull final Path dllPath) {
+        MysticLightAPI.loadNativeDll(dllPath);
         if (requireElevatedPrivileges && !MysticLightAPI.isProcessElevated()) {
             throw new IllegalStateException("The JVM must run with administrator privileges in order to control Mystic Light devices.");
         }
-        if (!apiInitialized) {
-            MysticLightAPI.initialize();
-            apiInitialized = true;
-        }
+        MysticLightAPI.initialize();
     }
 
     /**
      * @return Returns all accessible Mystic Light devices.
      */
-    public Collection<Device> getAllAvailableDevices() {
+    public List<Device> getAllAvailableDevices() {
         return Arrays.stream(MysticLightAPI.getDeviceInfo())
                 .map(Device::new)
                 .collect(Collectors.toList());

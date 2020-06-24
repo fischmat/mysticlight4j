@@ -9,25 +9,6 @@ import java.util.Locale;
 
 @NoArgsConstructor(access = AccessLevel.PACKAGE, onConstructor_ = @VisibleForTesting)
 class MysticLightNativeBinding {
-    protected static final String NATIVE_DLL_NAME_X86 = "mysticlight4j_native.dll";
-    protected static final String NATIVE_DLL_NAME_X64 = "mysticlight4j_native_x64.dll";
-
-    // Load the native wrapper DLL on class initialization
-    static {
-        final String operatingSystem = System.getProperty("os.name").toLowerCase(Locale.getDefault());
-        if(!operatingSystem.startsWith("windows")) {
-            throw new IllegalStateException("Mystic Light is only supported on Microsoft Windows operating systems");
-        }
-        final String userDirPath = System.getProperty("user.dir");
-        final boolean isX86 = System.getProperty("os.arch").toLowerCase(Locale.getDefault()).equals("x86");
-        final String dllVersion = isX86 ? NATIVE_DLL_NAME_X86 : NATIVE_DLL_NAME_X64;
-        final File nativeWrapperDll = new File(userDirPath + File.separator + dllVersion);
-        if (!nativeWrapperDll.canRead()) {
-            throw new IllegalStateException(String.format("Could not find native DLL %s in path %s", NATIVE_DLL_NAME_X86, userDirPath));
-        }
-        System.load(nativeWrapperDll.getAbsolutePath());
-    }
-
     /**
      * Interaction with the Mystic Light API requires the process to run with administrator privileges.
      * This is a helper method for checking if the process is running with elevated privileges and is not actually part

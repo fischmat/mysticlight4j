@@ -9,7 +9,7 @@ import lombok.Getter;
  * {@code MLAPI_GetErrorMessage}.
  */
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 public final class MysticLightAPIException extends RuntimeException {
     private final int mlApiErrorCode;
     public MysticLightAPIException(final String message, final int mlApiErrorCode) {

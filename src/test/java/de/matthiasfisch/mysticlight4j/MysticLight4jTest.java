@@ -11,6 +11,8 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Field;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -27,15 +29,12 @@ public class MysticLight4jTest {
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
+    private Path workingDirectory;
+
     @Before
     public void setUp() throws Exception {
         mockStatic(MysticLightAPI.class);
-
-        // Reset the API initialization flag
-        final Class<?> clazz = MysticLight4j.class;
-        final Field apiInitializedField = clazz.getDeclaredField("apiInitialized");
-        apiInitializedField.setAccessible(true);
-        apiInitializedField.setBoolean(null, false);
+        workingDirectory = Paths.get(System.getProperty("user.dir"));
     }
 
     @Test
@@ -57,7 +56,7 @@ public class MysticLight4jTest {
         thrown.expectMessage("The JVM must run with administrator privileges in order to control Mystic Light devices.");
 
         // Act + Assert - via rule
-        new MysticLight4j(true);
+        new MysticLight4j(true, workingDirectory);
     }
 
     @Test
@@ -66,7 +65,7 @@ public class MysticLight4jTest {
         when(MysticLightAPI.isProcessElevated()).thenReturn(false);
 
         // Act
-        new MysticLight4j(false);
+        new MysticLight4j(false, workingDirectory);
 
         // Assert
         verifyStatic(MysticLightAPI.class);
@@ -79,20 +78,6 @@ public class MysticLight4jTest {
         when(MysticLightAPI.isProcessElevated()).thenReturn(true);
 
         // Act
-        new MysticLight4j();
-
-        // Assert
-        verifyStatic(MysticLightAPI.class);
-        MysticLightAPI.initialize();
-    }
-
-    @Test
-    public void testCTOR_instantiateTwiceAndElevatedPrivileges_apiInitializedOnce() throws Exception {
-        // Arrange
-        when(MysticLightAPI.isProcessElevated()).thenReturn(true);
-
-        // Act
-        new MysticLight4j();
         new MysticLight4j();
 
         // Assert
