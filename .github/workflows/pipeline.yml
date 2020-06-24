@@ -24,4 +24,4 @@ jobs:
 
     # Run unit tests
     - name: Run a one-line script
-      run: mvn verify
+      run: mvn -Dgpg.skip verify
