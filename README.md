@@ -19,7 +19,15 @@ Before using mysticlight4j library please consider the following requirements:
 - The native bindings and the SDK DLLs are both available for x86 and x64 system architectures. Make sure that you load the correct binding DLL or use the autodetection (see below).
 
 In order to use mysticlight4j in your project please follow these steps:
-- Build the JAR (run `mvn package` - it will then appear in the `target` folder) and include it as library in your project. (maven support will follow soon)
+- Add the library as dependency to your `pom.xml`
+```xml
+<dependency>
+    <groupId>de.matthiasfisch</groupId>
+    <artifactId>mysticlight4j</artifactId>
+    <version>0.2.0</version>
+</dependency>
+```
+
 - Put the native binding JARs `mysticlight4j_native.dll` (for x86) and `mysticlight4j_native_x64.dll` into your project root.
 - Download the [MSI Mystic Light SDK](http://download.msi.com/uti_exe/Mystic_light_SDK.zip) and extract the DLLs into your project root
 
