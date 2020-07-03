@@ -24,11 +24,11 @@ In order to use mysticlight4j in your project please follow these steps:
 <dependency>
     <groupId>de.matthiasfisch</groupId>
     <artifactId>mysticlight4j</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
 </dependency>
 ```
 
-- Put the native binding JARs `mysticlight4j_native.dll` (for x86) and `mysticlight4j_native_x64.dll` into your project root.
+- Put the native binding DLLs `mysticlight4j_native.dll` (for x86) and `mysticlight4j_native_x64.dll` (for x64) into your project root.
 - Download the [MSI Mystic Light SDK](http://download.msi.com/uti_exe/Mystic_light_SDK.zip) and extract the DLLs into your project root
 
 ## How to use the object oriented API
