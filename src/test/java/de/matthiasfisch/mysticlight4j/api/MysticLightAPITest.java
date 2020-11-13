@@ -102,6 +102,26 @@ public class MysticLightAPITest {
         assertNativeLibraryLoaded();
     }
 
+    @Test
+    public void testInitialize_sdkDllNotFound_exceptionThrown() throws Exception {
+        // Arrange
+        // Temporarily rename the SDK DLL
+        final String sdkDllName = getSdkDllNameForSystemArchitecture();
+        final File sdkDll = Paths.get(System.getProperty("user.dir")).resolve(sdkDllName).toFile();
+        final File renamedDll = Paths.get(System.getProperty("user.dir")).resolve("renamed.dll").toFile();
+        sdkDll.renameTo(renamedDll);
+
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage(String.format("The MSI MysticLight SDK DLL is not present at expected path %s.", sdkDll.getAbsolutePath()));
+
+        // Act + Assert - via rule
+        try {
+            MysticLightAPI.initialize();
+        } finally {
+            renamedDll.renameTo(sdkDll);
+        }
+    }
+
     private void assertNativeLibraryLoaded() throws Exception {
         final Field clLibrariesField = ClassLoader.class.getDeclaredField("loadedLibraryNames");
         clLibrariesField.setAccessible(true);
@@ -123,6 +143,11 @@ public class MysticLightAPITest {
     private String getDllNameForSystemArchitecture() {
         final String osArch = System.getProperty("os.arch").toLowerCase(Locale.getDefault());
         return osArch.contains("x86") ? MysticLightAPI.NATIVE_DLL_NAME_X86 : MysticLightAPI.NATIVE_DLL_NAME_X64;
+    }
+
+    private String getSdkDllNameForSystemArchitecture() {
+        final String osArch = System.getProperty("os.arch").toLowerCase(Locale.getDefault());
+        return osArch.contains("x86") ? MysticLightAPI.SDK_DLL_NAME_X86 : MysticLightAPI.SDK_DLL_NAME_X64;
     }
 
     private boolean isRunningAsWindowsAdmin() {

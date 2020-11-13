@@ -1,9 +1,21 @@
 #include "pch.h"
 
+#define SDK_DLL_NAME_X86 L"MysticLight_SDK.dll"
+#define SDK_DLL_NAME_X64 L"MysticLight_SDK_x64.dll"
+
 MysticLightAPI mysticLight = MysticLightAPI();
 
 bool loadMysticLightLibrary() {
-	const HINSTANCE  MLinstance = LoadLibrary(TEXT("MysticLight_SDK_x64.dll"));
+	SYSTEM_INFO systemInfo;
+	GetNativeSystemInfo(&systemInfo);
+	const wchar_t* dllName;
+	if (systemInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_INTEL) {
+		dllName = SDK_DLL_NAME_X86;
+	} else {
+		dllName = SDK_DLL_NAME_X64;
+	}
+
+	const HINSTANCE  MLinstance = LoadLibrary(dllName);
 	if (!MLinstance)
 		return false;
 
