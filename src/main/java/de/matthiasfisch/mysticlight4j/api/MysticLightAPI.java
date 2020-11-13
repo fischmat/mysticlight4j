@@ -6,7 +6,6 @@ import lombok.Synchronized;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.Validate;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,6 +24,8 @@ import java.util.Locale;
 public class MysticLightAPI {
     protected static final String NATIVE_DLL_NAME_X86 = "mysticlight4j_native.dll";
     protected static final String NATIVE_DLL_NAME_X64 = "mysticlight4j_native_x64.dll";
+    protected static final String SDK_DLL_NAME_X86 = "MysticLight_SDK.dll";
+    protected static final String SDK_DLL_NAME_X64 = "MysticLight_SDK_x64.dll";
 
     /**
      * Static flag indicating whether the native DLL was already loaded.
@@ -97,6 +98,7 @@ public class MysticLightAPI {
         if(!operatingSystem.startsWith("windows")) {
             throw new IllegalStateException("Mystic Light is only supported on Microsoft Windows operating systems");
         }
+        final SystemArchitecture architecture = getSystemArchitecture();
 
         final File file = path.toFile();
         Validate.isTrue(file.exists(), "The path %s does not exist.", file.getAbsolutePath());
@@ -104,9 +106,14 @@ public class MysticLightAPI {
 
         final Path dllPath;
         if (file.isDirectory()) {
-            final boolean isX86 = System.getProperty("os.arch").toLowerCase(Locale.getDefault()).equals("x86");
-            final String dllForArch = isX86 ? NATIVE_DLL_NAME_X86 : NATIVE_DLL_NAME_X64;
-            dllPath = path.resolve(Paths.get(dllForArch));
+            switch (architecture) {
+                case X86:
+                    dllPath = path.resolve(Paths.get(NATIVE_DLL_NAME_X86)); break;
+                case X64:
+                    dllPath = path.resolve(Paths.get(NATIVE_DLL_NAME_X64)); break;
+                default:
+                    throw new IllegalStateException(String.format("Unsupported system architecture %s.", architecture));
+            }
         } else {
             dllPath = file.toPath();
         }
@@ -117,8 +124,25 @@ public class MysticLightAPI {
         Validate.isTrue(dllFile.isFile(), "The native DLL path %s is not a file.", dllFile.getAbsolutePath());
         Validate.isTrue(dllFile.canRead(), "The native DLL at %s can not be read.", dllFile.getAbsolutePath());
 
+        // Check that SDK DLLs are present
+        final Path dllDirectory = Paths.get(dllFile.getParentFile().getAbsolutePath());
+        final File sdkDll;
+        switch (architecture) {
+            case X86:
+                sdkDll = dllDirectory.resolve(SDK_DLL_NAME_X86).toFile(); break;
+            case X64:
+                sdkDll = dllDirectory.resolve(SDK_DLL_NAME_X64).toFile(); break;
+            default:
+                throw new IllegalStateException(String.format("Unsupported system architecture %s.", architecture));
+        }
+
+        Validate.isTrue(sdkDll.exists(), "The MSI MysticLight SDK DLL is not present at expected path %s.", sdkDll.getAbsolutePath());
+        Validate.isTrue(sdkDll.isFile(), "The MSI MysticLight SDK DLL %s is not a file.", sdkDll.getAbsolutePath());
+        Validate.isTrue(sdkDll.canRead(), "The MSI MysticLight SDK DLL %s can not be read.", sdkDll.getAbsolutePath());
+
         // Load the native DLL
         System.load(dllPath.toAbsolutePath().toString());
+        isNativeDllLoaded = true;
     }
 
     /**
@@ -292,5 +316,19 @@ public class MysticLightAPI {
     static void setInitializationStatus(final boolean initializationStatus) {
         MysticLightAPI.isNativeDllLoaded = initializationStatus;
         MysticLightAPI.isInitialized = initializationStatus;
+    }
+
+    private static SystemArchitecture getSystemArchitecture() {
+        final String archValue = System.getProperty("os.arch").toLowerCase(Locale.getDefault());
+        switch (archValue) {
+            case "amd64": return SystemArchitecture.X64;
+            case "x86": return SystemArchitecture.X86;
+            default:
+                throw new IllegalStateException(String.format("Detected unsupported system architecture '%s'. Only x86 and x64 are supported.", archValue));
+        }
+    }
+
+    private enum SystemArchitecture {
+        X86, X64
     }
 }
