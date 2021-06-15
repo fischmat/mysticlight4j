@@ -24,7 +24,7 @@ In order to use mysticlight4j in your project please follow these steps:
 <dependency>
     <groupId>de.matthiasfisch</groupId>
     <artifactId>mysticlight4j</artifactId>
-    <version>0.2.2</version>
+    <version>0.2.3</version>
 </dependency>
 ```
 
