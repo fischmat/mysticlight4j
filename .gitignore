@@ -77,3 +77,4 @@ MysticLight_SDK_x64.dll
 
 # Don't include settings.xml with Sonatype password
 settings.xml
+/MysticLight_SDK.h
